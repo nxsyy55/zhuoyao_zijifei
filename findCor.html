@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf8" />
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<title>捉宝贝</title>
+	<style type="text/css">
+		body, html{width: 100%;height: 100%;margin:0;font-family:"微软雅黑";}
+		#map{height:70%;width:100%;}
+		#result{width:100%; font-size:14px;line-height:20px;}
+	</style>
+	<script src="http://api.map.baidu.com/api?v=2.0&ak=Zi5NaQzHS9bakF87GklaIGd8"></script>
+    <script src="WSCoordinate.js"></script>
+</head>
+<body>
+
+	<div id="map"></div>
+	<div id="result">
+		<p>
+				&lt;?xml version=&quot;1.0&quot;?&gt; </br>
+				&lt;gpx version=&quot;1.1&quot; creator=&quot;gpxgenerator.com&quot;&gt;
+		</p>
+	</div>
+
+</body>
+</html>
+
+<script >
+
+var map = new BMap.Map("map");
+map.centerAndZoom(new BMap.Point(121.469144,31.189113), 20);
+map.enableScrollWheelZoom(true);
+
+cnt = 1;
+
+function addMarker(point,label){
+		var marker = new BMap.Marker(point);
+		map.addOverlay(marker);
+		marker.setLabel(label);
+        cnt++;
+	}
+
+
+
+function getCor(point) {
+	var p = new BMap.Point(point.point.lng, point.point.lat);
+
+	//将百度坐标转为GCJ-02(火星坐标)
+    var result1 = new bd09togcj02(point.point.lng, point.point.lat);
+
+    //将GCJ-02(火星坐标)转为WGS-84
+    var result2 = new gcj02towgs84(result1.longitude,result1.latitude);
+
+	var label = new BMap.Label(cnt,{offset:new BMap.Size(20,-10)});
+
+    addMarker(p, label);
+
+	document.getElementById("result").innerHTML += "&lt;wpt lat=\"" + result2.latitude + "\" lon=\"" + result2.longitude + "\"&gt</br>"
+	                                             + "&lttime&gt2019-05-13T11:37:20Z&lt/time&gt &lt/wpt&gt</br></br>";
+
+}
+
+map.addEventListener("click", getCor);
+</script>
